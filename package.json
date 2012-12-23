@@ -1,6 +1,6 @@
 {
   "name": "yapa",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Yet another Promises/A implementation.",
   "author": {
     "name": "Jake Harding",
@@ -18,10 +18,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/jharding/confetti.git"
+    "url": "git://github.com/jharding/yapa.git"
   },
   "bugs": {
-    "url": "https://github.com/jharding/confetti/issues"
+    "url": "https://github.com/jharding/yapa/issues"
   },
   "keywords": [
     "promises",

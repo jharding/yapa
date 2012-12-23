@@ -3,7 +3,7 @@
   , sinon = require('sinon')
   , Promise = require('../');
 
-describe('Confetti', function() {
+describe('Yapa', function() {
   var value1 = 'i am value 1'
     , value2 = 'i am value 2';
 
