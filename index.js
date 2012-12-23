@@ -39,7 +39,8 @@ function promiseFactory() {
 
   Promise.prototype.values = function(onResolved) {
     var thenPromise = new Promise(this.$)
-      , onResolved = invokeCallback.bind(this, onResolved, 'apply');
+      , onResolved = invokeCallback.bind(this, onResolved, 'apply')
+      , onRejected = propagate.bind(this);
 
     if (this.isResolved) {
       onResolved(this._values.concat([this._value]), thenPromise);
@@ -48,6 +49,10 @@ function promiseFactory() {
     else {
       this.on('promise:resolved', function(value) {
         onResolved(this._values.concat([value]), thenPromise);
+      });
+
+      this.on('promise:rejected', function(error) {
+        onRejected(error, thenPromise, 'reject');
       });
     }
 
