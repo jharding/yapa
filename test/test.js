@@ -1,5 +1,4 @@
- var _ = require('underscore')
-  , assert = require('assert')
+var assert = require('assert')
   , sinon = require('sinon')
   , Promise = require('../');
 
