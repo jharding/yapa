@@ -6,6 +6,14 @@ describe('Yapa', function() {
   var value1 = 'i am value 1'
     , value2 = 'i am value 2';
 
+  describe('constructor', function() {
+    it('should assign first argument to this.$', function() {
+      var promise = new Promise(value1);
+
+      assert.equal(promise.$, value1);
+    });
+  });
+
   describe('#value', function() {
     it('should not return a promise', function() {
       var promise = new Promise();
