@@ -67,6 +67,20 @@ describe('Yapa', function() {
       promise.resolve(value1);
     });
 
+    it('should not prevent errors from propagating', function(done) {
+      var promise = new Promise()
+        , error = new Error('uh oh');
+
+      promise
+      .values(function(val) { assert(false); })
+      .error(function(err) {
+        assert.equal(err.message, error.message);
+        done();
+      });
+
+      promise.reject(error);
+    });
+
     it('should not be affected by intermediary null handlers', function(done) {
       var promise = new Promise();
 
