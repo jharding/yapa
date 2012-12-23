@@ -1,4 +1,4 @@
-var Promise = require('../');
+var Promise = require('../').Promise;
 
 exports.fulfilled = function(value) {
   var promise = new Promise();

@@ -1,6 +1,6 @@
 var assert = require('assert')
   , sinon = require('sinon')
-  , Promise = require('../');
+  , Promise = require('../').Promise;
 
 describe('Yapa', function() {
   var value1 = 'i am value 1'
