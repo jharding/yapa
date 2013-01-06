@@ -69,7 +69,7 @@ Similar to the `then` method, however rather than have `onFulfilled`'s argument 
 ```javascript
   promise
   .then(function() { return 123; })
-  .then(function() { return 'do re mi' ; })
+  .then(function() { return 'do re mi'; })
   .values(function(start, easyAs, simpleAs) { 
     console.log(start);
     console.log('easy as %s', easyAs);
