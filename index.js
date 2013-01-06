@@ -17,9 +17,9 @@ function promiseFactory() {
     EventEmitter.call(this);
 
     this._value;
-    this._error;
+    this._reason;
     this._values = [];
-    this.isResolved = this.isRejected = false;
+    this.isFulfilled = this.isRejected = false;
   };
 
   util.inherits(Promise, EventEmitter);
@@ -27,128 +27,123 @@ function promiseFactory() {
   // public instance methods
   // -----------------------
 
-  Promise.prototype.value = function(onResolved) {
-    this.then(onResolved, null);
-  };
-
   Promise.prototype.error = function(onRejected) {
     return this.then(null, onRejected);
   };
 
-  Promise.prototype.values = function(onResolved) {
+  Promise.prototype.values = function(onFulfilled) {
     var thenPromise = new Promise()
-      , onResolved = invokeCallback.bind(this, onResolved, 'apply')
+      , onFulfilled = invokeCallback.bind(this, onFulfilled, 'apply')
       , onRejected = propagate.bind(this);
 
-    if (this.isResolved) {
-      onResolved(this._values.concat([this._value]), thenPromise);
+    if (this.isFulfilled) {
+      onFulfilled(this._values.concat([this._value]), thenPromise);
     }
 
     else {
-      this.on('promise:resolved', function(value) {
-        onResolved(this._values.concat([value]), thenPromise);
+      this.on('promise:fulfilled', function(value) {
+        onFulfilled(this._values.concat([value]), thenPromise);
       });
 
-      this.on('promise:rejected', function(error) {
-        onRejected(error, thenPromise, 'reject');
+      this.on('promise:rejected', function(reason) {
+        onRejected(reason, thenPromise, 'reject');
       });
     }
 
     return thenPromise;
   };
 
-  Promise.prototype.then = function(onResolved, onRejected) {
+  Promise.prototype.then = function(onFulfilled, onRejected) {
     var thenPromise = new Promise()
-      , onResolved = onResolved ?
-        invokeCallback.bind(this, onResolved, 'call') : propagate.bind(this)
+      , onFulfilled = onFulfilled ?
+        invokeCallback.bind(this, onFulfilled, 'call') : propagate.bind(this)
       , onRejected = onRejected ?
         invokeCallback.bind(this, onRejected, 'call') : propagate.bind(this);
 
-    if (this.isResolved) {
+    if (this.isFulfilled) {
       nextTick(function() {
-        onResolved(this._value, thenPromise, 'resolve');
+        onFulfilled(this._value, thenPromise, 'fulfill');
       }, this);
     }
 
     else if (this.isRejected) {
       nextTick(function() {
-        onRejected(this._error, thenPromise, 'reject');
+        onRejected(this._reason, thenPromise, 'reject');
       }, this);
     }
 
     else {
-      this.on('promise:resolved', function(value) {
-        onResolved(value, thenPromise, 'resolve');
+      this.on('promise:fulfilled', function(value) {
+        onFulfilled(value, thenPromise, 'fulfill');
       });
 
-      this.on('promise:rejected', function(error) {
-        onRejected(error, thenPromise, 'reject');
+      this.on('promise:rejected', function(reason) {
+        onRejected(reason, thenPromise, 'reject');
       });
     }
 
     return thenPromise;
   };
 
-  Promise.prototype.resolve = function(value) {
-    nextTick(function() { this.emit('promise:resolved', value); }, this);
+  Promise.prototype.fulfill = function(value) {
+    nextTick(function() { this.emit('promise:fulfilled', value); }, this);
 
     this._value = value;
-    this.isResolved = true;
-    this.resolve = this.reject = noop;
+    this.isFulfilled = true;
+    this.fulfill = this.reject = noop;
   };
 
-  Promise.prototype.reject = function(error) {
-    nextTick(function() { this.emit('promise:rejected', error); }, this);
+  Promise.prototype.reject = function(reason) {
+    nextTick(function() { this.emit('promise:rejected', reason); }, this);
 
-    this._error = error;
+    this._reason = reason;
     this.isRejected = true;
-    this.resolve = this.reject = noop;
+    this.fulfill = this.reject = noop;
   };
 
   // private instance methods
   // ------------------------
 
-  function invokeCallback(cb, invokeMethod, valueOrError, promise, type) {
-    var cbValue, cbError;
+  function invokeCallback(cb, invokeMethod, valueOrReason, promise, type) {
+    var cbValue, cbError, errorThrown;
 
     try {
-      cbValue = cb[invokeMethod](null, valueOrError);
+      cbValue = cb[invokeMethod](null, valueOrReason);
     } catch(err) {
-      // in the case a falsy value is thrown, set cbError to true so
-      // it's known that an error was indeed thrown
-      cbError = err || true;
+      errorThrown = true;
+      cbError = err;
     }
 
     // send return values in promise chain to downstream promise
-    if (type === 'resolve') {
-      promise._values = this._values.concat([valueOrError]);
+    if (type === 'fulfill') {
+      promise._values = this._values.concat([valueOrReason]);
     }
 
-    if (!cbError && cbValue instanceof Promise) {
+    if (!errorThrown && cbValue instanceof Promise) {
       cbValue.then(
-        function(v) { promise.resolve(v); }
+        function(v) { promise.fulfill(v); }
       , function(e) { promise.reject(e); }
       );
     }
 
     else {
-      !cbError ? promise.resolve(cbValue) : promise.reject(cbError);
+      !errorThrown ? promise.fulfill(cbValue) : promise.reject(cbError);
     }
   }
 
-  function propagate(valueOrError, promise, type) {
+  function propagate(valueOrReason, promise, type) {
     // propagate return values
     promise._values = this._values.slice(0);
 
-    if (valueOrError instanceof Promise) {
-      valueOrError.then(
-        function(v) { promise.resolve(v); }
+    if (valueOrReason instanceof Promise) {
+      valueOrReason.then(
+        function(v) { promise.fulfill(v); }
       , function(e) { promise.reject(e); }
       );
     }
 
     else {
-      promise[type](valueOrError);
+      promise[type](valueOrReason);
     }
   }
 

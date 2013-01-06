@@ -6,24 +6,6 @@ describe('Yapa', function() {
   var value1 = 'i am value 1'
     , value2 = 'i am value 2';
 
-  describe('#value', function() {
-    it('should not return a promise', function() {
-      var promise = new Promise();
-
-      assert.equal(promise.value(), undefined);
-    });
-
-    it('should call then(null, fn)', function() {
-      var promise = new Promise()
-        , spy = sinon.spy(promise, 'then')
-        , fn = function() {};
-
-      promise.value(fn);
-
-      assert(spy.calledWith(fn, null));
-    });
-  });
-
   describe('#error', function() {
     it('should return a promise', function() {
       var promise = new Promise();
@@ -56,7 +38,7 @@ describe('Yapa', function() {
         done();
       });
 
-      promise.resolve(value1);
+      promise.fulfill(value1);
     });
 
     it('should not prevent errors from propagating', function(done) {
@@ -88,7 +70,7 @@ describe('Yapa', function() {
         done();
       });
 
-      promise.resolve(value1);
+      promise.fulfill(value1);
     });
 
     describe('when handler in chain returns a promise', function() {
@@ -98,7 +80,7 @@ describe('Yapa', function() {
 
         promise1
         .then(function(val) {
-          process.nextTick(function() { promise2.resolve(value2); });
+          process.nextTick(function() { promise2.fulfill(value2); });
 
           return promise2;
         })
@@ -108,7 +90,7 @@ describe('Yapa', function() {
           done();
         });
 
-        promise1.resolve(value1);
+        promise1.fulfill(value1);
       });
     });
   });
@@ -126,7 +108,7 @@ describe('Yapa', function() {
         done();
       });
 
-      promise.resolve(value1);
+      promise.fulfill(value1);
     });
   });
 
@@ -136,16 +118,16 @@ describe('Yapa', function() {
         , value = 'i am a value'
         , count = 0;
 
-      promise.value(function(val) {
+      promise.then(function(val) {
         assert.equal(val, value);
         assert.equal(count, 0);
         count += 1;
       });
 
-      promise.resolve(value);
+      promise.fulfill(value);
 
       process.nextTick(function() {
-        promise.value(function(val) {
+        promise.then(function(val) {
           assert.equal(val, value);
           assert.equal(count, 1);
           done();

@@ -2,7 +2,7 @@ var Promise = require('../').Promise;
 
 exports.fulfilled = function(value) {
   var promise = new Promise();
-  promise.resolve(value);
+  promise.fulfill(value);
   return promise;
 };
 
@@ -17,7 +17,7 @@ exports.pending = function () {
 
   return {
     promise: promise
-  , fulfill: function(value) { promise.resolve(value); }
+  , fulfill: function(value) { promise.fulfill(value); }
   , reject: function(error) { promise.reject(error); }
   };
 };
