@@ -55,9 +55,9 @@ function promiseFactory() {
 
   Promise.prototype.then = function(onFulfilled, onRejected) {
     var thenPromise = new Promise()
-      , onFulfilled = onFulfilled ?
+      , onFulfilled = typeof onFulfilled === 'function' ?
         invokeCallback.bind(this, onFulfilled, 'call') : propagate.bind(this)
-      , onRejected = onRejected ?
+      , onRejected = typeof onRejected === 'function' ?
         invokeCallback.bind(this, onRejected, 'call') : propagate.bind(this);
 
     if (this.isFulfilled) {
