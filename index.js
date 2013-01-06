@@ -109,10 +109,7 @@ function promiseFactory() {
 
     try {
       cbValue = cb[invokeMethod](null, valueOrReason);
-    } catch(err) {
-      errorThrown = true;
-      cbError = err;
-    }
+    } catch(err) { errorThrown = true, cbError = err; }
 
     // send return values in promise chain to downstream promise
     if (type === 'fulfill') {
@@ -135,7 +132,7 @@ function promiseFactory() {
     // propagate return values
     promise._values = this._values.slice(0);
 
-    if (valueOrReason instanceof Promise) {
+    if (valueOrReason && typeof valueOrReason.then === 'function') {
       valueOrReason.then(
         function(v) { promise.fulfill(v); }
       , function(e) { promise.reject(e); }
