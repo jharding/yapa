@@ -13,10 +13,8 @@ function promiseFactory() {
   // constructor
   // -----------
 
-  var Promise = function($) {
+  var Promise = function() {
     EventEmitter.call(this);
-
-    this.$ = $ || {};
 
     this._value;
     this._error;
@@ -38,7 +36,7 @@ function promiseFactory() {
   };
 
   Promise.prototype.values = function(onResolved) {
-    var thenPromise = new Promise(this.$)
+    var thenPromise = new Promise()
       , onResolved = invokeCallback.bind(this, onResolved, 'apply')
       , onRejected = propagate.bind(this);
 
@@ -60,7 +58,7 @@ function promiseFactory() {
   };
 
   Promise.prototype.then = function(onResolved, onRejected) {
-    var thenPromise = new Promise(this.$)
+    var thenPromise = new Promise()
       , onResolved = onResolved ?
         invokeCallback.bind(this, onResolved, 'call') : propagate.bind(this)
       , onRejected = onRejected ?
