@@ -1,7 +1,7 @@
 {
   "name": "yapa",
   "version": "0.1.0",
-  "description": "Yet another Promises/A implementation.",
+  "description": "Yet another Promises/A+ implementation.",
   "author": {
     "name": "Jake Harding",
     "email": "jacob.s.harding@gmail.com"
@@ -14,7 +14,7 @@
     "sinon": "~1"
   },
   "scripts": {
-    "test": "promises-aplus-tests test/promise_tests_adapter  && ./node_modules/mocha/bin/mocha --reporter spec"
+    "test": "promises-aplus-tests test/promise_tests_adapter  && mocha --reporter spec"
   },
   "repository": {
     "type": "git",
@@ -24,6 +24,7 @@
     "url": "https://github.com/jharding/yapa/issues"
   },
   "keywords": [
+    "Promises/A+",
     "promises",
     "futures"
   ],
