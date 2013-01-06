@@ -9,12 +9,12 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "promise-tests": "~2",
+    "promises-aplus-tests": "~1",
     "mocha": "~1",
     "sinon": "~1"
   },
   "scripts": {
-    "test": "./node_modules/promise-tests/lib/cli.js all ./test/promise_tests_adapter && ./node_modules/mocha/bin/mocha --reporter spec"
+    "test": "promises-aplus-tests test/promise_tests_adapter  && ./node_modules/mocha/bin/mocha --reporter spec"
   },
   "repository": {
     "type": "git",
