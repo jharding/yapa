@@ -119,10 +119,10 @@ function promiseFactory() {
       promise._values = this._values.concat([valueOrReason]);
     }
 
-    if (!errorThrown && cbValue instanceof Promise) {
+    if (!errorThrown && cbValue && typeof cbValue.then === 'function') {
       cbValue.then(
-        function(v) { promise.fulfill(v); }
-      , function(e) { promise.reject(e); }
+        function(value) { promise.fulfill(value); }
+      , function(reason) { promise.reject(reason); }
       );
     }
 
